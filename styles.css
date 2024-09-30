@@ -1,0 +1,13 @@
+.container{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+button{
+    width: 400px;
+}
+form{
+    display: grid;
+    grid-template-rows: auto;
+    width:400px;
+}
