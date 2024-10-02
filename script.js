@@ -1,6 +1,6 @@
 const myLibrary=[];
 
-function book(title,author,pages, read = false){
+function book(title,author,pages, read = "Not Read"){
     this.title = title;
     this.author = author;
     this.pages = pages;
@@ -11,29 +11,124 @@ function book(title,author,pages, read = false){
         else
             return `The ${this.title} by ${this.author}, ${this.pages} pages, not read yet`;
     }
+    this.toggle = function(){
+        if(this.read === "Not Read"){
+            this.read = "Read";
+        }
+        else
+            this.read = "Not Read";
+    }
 }
 
-function addBookToLibrary(title,author,pages,read = false){
+function addBookToLibrary(title,author,pages,read = "Not Read"){
     myLibrary.push(new book(title,author,pages,read));
 }
 
 function displayLibrary(){
-    
     myLibrary.forEach(function (book) {
         console.log(book.info());
     });
 }
 
-const dialog =document.querySelector("dialog");
+const dialog = document.querySelector("dialog");
 const addBook = document.querySelector(".add");
 const submit = document.querySelector(".submit");
+const close = document.querySelector(".close");
 addBook.addEventListener("click", ()=>{
     dialog.showModal();
 })
 
-submit.addEventListener("submit", (event)=>{
+submit.addEventListener("click", (event)=>{
+    var title = document.querySelector(".title").value;
+    var author = document.querySelector(".author").value;
+    var pages = document.querySelector(".pages").value;
+    var read = document.querySelector(".read").value;
+    if(read ==="Read"){
+        addBookToLibrary(title,author,pages,true);
+    }
+    else{
+        addBookToLibrary(title,author,pages);
+    }
+    addBookHtml(title,author,pages,read);
     event.preventDefault();
+    dialog.close();
+    
 })
+
+close.addEventListener("click", ()=>{
+    dialog.close();
+})
+
+function addBookHtml(title,author,pages,read, index = myLibrary.length){
+
+    const display = document.querySelector(".library");
+    const book = document.createElement("div");
+    book.setAttribute("class","book");
+    book.setAttribute("id", `${index}`)
+
+    const bookTitle = document.createElement("div")
+    const bookAuthor = document.createElement("div");
+    const bookPages = document.createElement("div");
+    const bookRead = document.createElement("div");
+    bookRead.setAttribute("id", `book ${index}`);
+
+    const readToggle = document.createElement("Button");
+    readToggle.setAttribute("class","toggle");
+    readToggle.innerText ="Read toggle";
+    
+    readToggle.addEventListener("click",()=>{
+        myLibrary[bookFind(title)].toggle();
+        const targetedBook = document.getElementById(`book ${index}`);
+        targetedBook.innerText = myLibrary[bookFind(title)].read;
+    })
+
+    const remove = document.createElement("button");
+    remove.setAttribute("class", "remove");
+    remove.innerText = "Remove Book";
+
+    remove.addEventListener("click", ()=>{
+        myLibrary.splice(bookFind(title),1);
+        const targetedBook = document.getElementById(index);
+        targetedBook.remove();
+    });
+
+    bookTitle.innerText = title;
+    bookAuthor.innerText = author;
+    bookPages.innerText = pages;
+    bookRead.innerText = read;
+
+    book.appendChild(bookTitle);
+    book.appendChild(bookAuthor);
+    book.appendChild(bookPages);
+    book.appendChild(bookRead);
+    book.appendChild(readToggle);
+    book.appendChild(remove);
+    
+
+    display.appendChild(book);
+}
+
+function bookFind(book){
+    for(let i = 0; i < myLibrary.length; i++){
+        if(myLibrary[i].title === book){
+            return i;
+        }
+    }
+}
+
+
+ addBookToLibrary("LOTR","J.K.Tolken",400,"Read");
+ addBookToLibrary("Harry Potter", "J.J.Smells",500,"Read");
+ addBookToLibrary("Words Of Radiance", "Brandon Sanderson", 1000);
+ for(let i = 0; i < myLibrary.length; i++){
+    addBookHtml(myLibrary[i].title,myLibrary[i].author,myLibrary[i].pages,myLibrary[i].read,i);
+ }
+
+
+
+
+// displayLibrary();
+
 // addBook.addEventListener("click", ()=>{
 //     var container = document.querySelector(".container");
 
@@ -95,10 +190,3 @@ submit.addEventListener("submit", (event)=>{
 
 
 // })
-
-
-
-// addBookToLibrary("LOTR","J.K.Tolken",400,true);
-// addBookToLibrary("Harry Potter", "J.J.Smells",500,false);
-// addBookToLibrary("Words Of Radiance", "Brandon Sanderson", 1000, true);
-// displayLibrary();
